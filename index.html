@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSGO Crosshair Editor</title>
+  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="css/normalize.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous" />
+  <link href="css/styles.css" rel="stylesheet" />
+  <script src="js/underscore-min.js"></script>
+</head>
+<body>
+	<div class="container glass">
+	
+		<div class="content-container">
+			<h1 class="text-center mb-4 title">Crosshair Editor</h1>
+			
+			<div class="canvas-wrap">
+				<canvas id="myCanvas" style="background-color: #2c3e50; width: 100%; height: 350px;"></canvas>
+				<div class="incanvas-container">
+					<div class="incanvas-bottom">
+					
+						<button type="button" id="btnCrosshairDot" class="btn btn-incanvas-bot" data-toggle="tooltip" data-placement="bottom" data-bs-toggle="tooltip" data-bs-placement="top" title="Crosshair dot">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="white" width="24" height="24" xml:space="preserve" viewBox="0 0 512 512"><path d="M265.39 191h-18.73c-7.97 0-14.43-6.46-14.43-14.43V14.43c0-7.97 6.46-14.43 14.43-14.43h18.73c7.97 0 14.43 6.46 14.43 14.43v162.15c0 7.96-6.46 14.42-14.43 14.42zM191.09 246.85v18.71c0 7.97-6.46 14.43-14.43 14.43H14.43C6.46 279.98 0 273.53 0 265.56v-18.71c0-7.97 6.46-14.43 14.43-14.43h162.24c7.96 0 14.42 6.46 14.42 14.43zM512 246.59v18.71c0 7.97-6.46 14.43-14.43 14.43H335.34c-7.97 0-14.43-6.46-14.43-14.43v-18.71c0-7.97 6.46-14.43 14.43-14.43h162.24c7.96 0 14.42 6.46 14.42 14.43zM265.29 512h-18.73c-7.97 0-14.43-6.46-14.43-14.43V335.43c0-7.97 6.46-14.43 14.43-14.43h18.73c7.97 0 14.43 6.46 14.43 14.43v162.15c0 7.96-6.46 14.42-14.43 14.42zM279.82 246.65v18.71c0 7.97-6.46 14.43-14.43 14.43h-18.73c-7.97 0-14.43-6.46-14.43-14.43v-18.71c0-7.97 6.46-14.43 14.43-14.43h18.73c7.97 0 14.43 6.46 14.43 14.43z"/></svg>
+						</button>
+						
+						<button type="button" id="btnCrosshairTShape" class="btn btn-incanvas-bot" data-toggle="tooltip" data-placement="bottom" data-bs-toggle="tooltip" data-bs-placement="top" title="Crosshair TShape">
+							<svg xmlns="http://www.w3.org/2000/svg" fill="white" width="24" height="24" xml:space="preserve" viewBox="0 0 512 512"><path d="M191.09 246.85v18.71c0 7.97-6.46 14.43-14.43 14.43H14.43C6.46 279.98 0 273.53 0 265.56v-18.71c0-7.97 6.46-14.43 14.43-14.43h162.24c7.96 0 14.42 6.46 14.42 14.43zM512 246.59v18.71c0 7.97-6.46 14.43-14.43 14.43H335.34c-7.97 0-14.43-6.46-14.43-14.43v-18.71c0-7.97 6.46-14.43 14.43-14.43h162.24c7.96 0 14.42 6.46 14.42 14.43zM265.29 512h-18.73c-7.97 0-14.43-6.46-14.43-14.43V335.43c0-7.97 6.46-14.43 14.43-14.43h18.73c7.97 0 14.43 6.46 14.43 14.43v162.15c0 7.96-6.46 14.42-14.43 14.42z"/></svg>
+						</button>
+						
+					</div>
+				</div>
+			</div>
+			
+
+		</div>
+		
+		<div class="d-flex justify-content-between align-items-center my-5">
+			<div class="controls-container">
+				<label class="form-label" for="settingsGap">Gap</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsGap" min="-3" max="32" step="0.1" value="1"/>
+				</div>
+				<label class="form-label" for="settingsLen">Size</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsLen" min="0.1" max="200" step="0.1" value="1"/>
+				</div>
+				<label class="form-label" for="settingsThick">Thickness</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsThick" min="0" max="100" step="0.1" value="0"/>
+				</div>
+				<label class="form-label" for="settingsOutlineSize">Outline size</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsOutlineSize" min="0" max="10" step="0.1" value="0"/>
+				</div>
+			</div>
+			<div class="controls-container">
+				<label class="form-label" for="settingsGap">Red</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsRed" min="0" max="255" step="1" value="255"/>
+				</div>
+				<label class="form-label" for="settingsLen">Green</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsGreen" min="0" max="255" step="1" value="255"/>
+				</div>
+				<label class="form-label" for="settingsLen">Blue</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsBlue" min="0" max="255" step="1" value="255"/>
+				</div>
+				<label class="form-label" for="settingsAlpha">Alpha</label>
+				<div class="range">
+				  <input type="range" class="form-range slider-dark" id="settingsAlpha" min="0" max="1" step="0.01" value="1"/>
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		
+		<div class="result-box d-flex justify-content-center align-items-center my-5">
+			<div class="copy-btn-area d-flex justify-content-center align-items-center">
+				<button type="button" class="btn-clipboard"id="copy-meters-btn" data-toggle="tooltip"data-placement="bottom" data-bs-toggle="tooltip" data-bs-placement="top" title="Copy to clipboard">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="white" width="20" height="20" class="bi bi-clipboard"viewBox="0 0 16 16"><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z" /><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z" /></svg>
+				</button>
+			</div>
+			<div class="result-box-container">
+				<div class="result-area">
+					<span id="result-output" style="margin-left: 30px; color: white; white-space: nowrap; overflow: hidden;"></span>
+				</div>
+			</div>
+			
+		</div>
+		
+		<div class="glow-divider my-5"></div>
+		
+		<div class="mt-5">
+			<div class="col-md-12 text-center">
+				<a class="icon-link" style="margin-left: 15px; margin-right: 15px" href="https://github.com/ESSTX" target="_blank" rel="noopener noreferrer">
+					<img aria-hidden="true" class="social-btn" src="svg/github.svg" width="24" height="24" />
+				</a>
+				<a class="icon-link" style="margin-left: 15px; margin-right: 15px" href="https://discord.gg/7qMT8Azffs" target="_blank" rel="noopener noreferrer">
+					<img aria-hidden="true" class="social-btn" src="svg/discord.svg" width="24" height="24" />
+				</a>
+				<a class="icon-link" style="margin-left: 15px; margin-right: 15px" href="https://www.artstation.com/esstx" target="_blank" rel="noopener noreferrer">
+					<img aria-hidden="true" class="social-btn" src="svg/artstation.svg" width="24" height="24" />
+				</a>
+				<a class="icon-link" style="margin-left: 15px; margin-right: 15px" href="https://steamcommunity.com/id/esstx/" target="_blank" rel="noopener noreferrer">
+					<img aria-hidden="true" class="social-btn" src="svg/steam.svg" width="24" height="24" />
+				</a>
+			</div>
+		</div>
+		
+	</div>
+
+	<div class="gradient"></div>
+	
+	<script src="js/jquery-3.6.4.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+	<script src="js/script.js"></script>
+</body>
+</html>
