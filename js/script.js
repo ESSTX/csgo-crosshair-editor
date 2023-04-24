@@ -1,50 +1,55 @@
 var canvas = document.getElementById('myCanvas');
 var ctx = canvas.getContext('2d');
 
+const distanceInternal = 5;
+var lineLength = 3;
+
+	tcrosshair = false;
+	centerDot = false;
+
+	distanceEdit = 1;
+	gap = distanceInternal + distanceEdit;
+	gapShoot = 0;
+	thickness = 0;
+
+	outline_enabled = true;
+	outline_size = 0;
+
+	r = 255;
+	g = 255;
+	b = 255;
+	a = 1;
+	
+	crosshairSize = 100;
+	crosshairThick = thickness + 4;
+	animtime = 10;
+	
+	lastTime = 0;
+	targetFPS = 60;
+	requiredElapsed = 1000 / targetFPS;
+	fpsLag = 0;
+	fps = 0;
+
 function fixCanvas(){
 	canvas.width  = $("#myCanvas").width();
 	canvas.height = $("#myCanvas").height();
 }
-
 function drawLine(x1, y1, x2, y2, color, width) {
-  ctx.strokeStyle = color;
-  ctx.beginPath();
-  ctx.lineWidth = width;
-  ctx.moveTo(x1+0.5, y1+0.5); //+0.5 cuz this stupid canvas..
-  ctx.lineTo(x2+0.5, y2+0.5);
-  ctx.stroke();
+	ctx.strokeStyle = color;
+	ctx.beginPath();
+	ctx.lineWidth = width;
+	ctx.moveTo(x1+0.5, y1+0.5); //+0.5 cuz this stupid canvas..
+	ctx.lineTo(x2+0.5, y2+0.5);
+	ctx.stroke();
 }
-
 function drawRect(x, y, w, h, color) {
 	ctx.fillStyle = color;
 	ctx.rect(x, y, w, h);
 	ctx.fill();
 }
-
 function lerp(a, b, n) {
 	return (b - a) * n + a;
 }
-
-var lineLength = 3;
-const distanceInternal = 5;
-
-var tcrosshair = false;
-
-var centerDot = true;
-
-var distanceEdit = 1;
-var gap = distanceInternal + distanceEdit;
-var thickness = 0;
-
-var outline_enabled = true;
-var outline_size = 0;
-
-var r = 255;
-var g = 255;
-var b = 255;
-var a = 1;
-
-var animGapSize = 0;
 
 function makeConsoleCommands(gap, alpha, size){
 	let cl_crosshairgap = 'cl_crosshairgap "'+gap+'";';
@@ -57,32 +62,15 @@ function makeConsoleCommands(gap, alpha, size){
 	let cl_crosshair_outlinethickness = 'cl_crosshair_outlinethickness "'+outline_size+'";';
 	$("#result-output").text( cl_crosshairgap +" "+ cl_crosshaircolor_r +" "+ cl_crosshaircolor_g +" "+ cl_crosshaircolor_b +" "+ cl_crosshairalpha +" "+ cl_crosshairsize +" "+ cl_crosshairthickness +" "+ cl_crosshair_outlinethickness );
 }
-let crosshairSize = 100;
-let crosshairThick = thickness + 4;
-let animtime = 10;
-function updateDrawCrosshair(delta){
-    "use strict";
-	// This is the distance of the line from the center
-	
-	//let crosshairSize = lineLength * 3;
-	
-	// Now its lerped :D
-	crosshairSize = lerp(crosshairSize, lineLength * 3, animtime * delta)
-	//console.log(crosshairSize);
-	
-	crosshairThick = lerp(crosshairThick, thickness + 1, animtime * delta)
-	//console.log(crosshairThick);
-	
-	gap = lerp(gap, distanceInternal + distanceEdit + (crosshairThick*1.5) - 3, animtime * delta)
-	
-	//let crosshairThick = thickness + 1;
-	//let crosshairOutThick = outline_size + 1;
-	//gap = distanceInternal + distanceEdit + (crosshairThick*1.5) - 3;
 
-	// Draw something on the canvas
+function updateDrawCrosshair(delta){
+
+	crosshairSize = lerp(crosshairSize, lineLength * 3, animtime * delta)
+	crosshairThick = lerp(crosshairThick, thickness + 1, animtime * delta)
+	gap = lerp(gap, distanceInternal + distanceEdit + (crosshairThick*1.5) - 3 + gapShoot, animtime * delta)
+
 	ctx.fillStyle = '#fff';
 
-	// Clear the canvas
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
   
 	let centerx = Number(canvas.width/2);
@@ -90,7 +78,6 @@ function updateDrawCrosshair(delta){
 	
 	let color = "rgba("+r+","+g+","+b+","+a+")";
 	let blackcolor = "rgba(0,0,0,0.8)";
-
 
 	if(outline_enabled){
 		//drawRect(centerx - crosshairSize - gap - (outline_size/2), centery-(crosshairThick/2) - (outline_size/2), crosshairSize+1+outline_size, crosshairThick+2+outline_size, "rgba(0,0,0,0.8)")
@@ -110,26 +97,12 @@ function updateDrawCrosshair(delta){
 	drawLine(centerx, centery + gap, centerx, centery + gap + crosshairSize, color, (crosshairThick*3)-2);
 	
 	if(centerDot){
-		//drawRect(centerx-crosshairThick/2, centery-crosshairThick/2, crosshairThick*2, crosshairThick*2, color)
+		drawRect(centerx-crosshairThick/2, centery-crosshairThick/2, crosshairThick*2, crosshairThick*2, color)
 	}
-	
-	makeConsoleCommands(distanceEdit, a, lineLength);
-}
 
-var lastTime;
-var requiredElapsed = 1000 / 60; // desired interval is 10fps
+}
 
 requestAnimationFrame(loop);
-
-function animGap(delta){
-	if(animGapSize > 0){
-		animGapSize -= 10 * delta;
-	}
-}
-
-var fpsLag = 0;
-var fps = 0;
-
 
 function loop(now) {
     requestAnimationFrame(loop);
@@ -151,15 +124,12 @@ function loop(now) {
 		
 		ctx.font = "12px JetBrainsMonoNL-Regular";
 		ctx.fillText("fps "+fps, 20, 20);
-		
-		//animGap(delta);
-		
-		//console.log(1/delta);
+
         lastTime = now;
     }
     
 }
-animGapSize = 20;
+
 ////////////////////////////////////////
 //
 // Bind colors
@@ -168,26 +138,22 @@ animGapSize = 20;
 var sliderSettingsRed = document.getElementById("settingsRed");
 sliderSettingsRed.addEventListener("input", function() {
 	r = Number(sliderSettingsRed.value);
-	console.log(a);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 var sliderSettingsGreen = document.getElementById("settingsGreen");
 sliderSettingsGreen.addEventListener("input", function() {
 	g = Number(sliderSettingsGreen.value);
-	console.log(a);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 var sliderSettingsBlue = document.getElementById("settingsBlue");
 sliderSettingsBlue.addEventListener("input", function() {
 	b = Number(sliderSettingsBlue.value);
-	console.log(a);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 var sliderSettingsAlpha = document.getElementById("settingsAlpha");
 sliderSettingsAlpha.addEventListener("input", function() {
 	a = Number(sliderSettingsAlpha.value);
-	console.log(a);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 ////////////////////////////////////////
 //
@@ -197,25 +163,25 @@ sliderSettingsAlpha.addEventListener("input", function() {
 var sliderSettingsGap = document.getElementById("settingsGap");
 sliderSettingsGap.addEventListener("input", function() {
 	distanceEdit = Number(sliderSettingsGap.value);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 
 var sliderSettingsLen = document.getElementById("settingsLen");
 sliderSettingsLen.addEventListener("input", function() {
 	lineLength = Number(sliderSettingsLen.value);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 
 var sliderSettingsThick = document.getElementById("settingsThick");
 sliderSettingsThick.addEventListener("input", function() {
 	thickness = Number(sliderSettingsThick.value);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 
 var sliderSettingsOutlineSize = document.getElementById("settingsOutlineSize");
 sliderSettingsOutlineSize.addEventListener("input", function() {
 	outline_size = Number(sliderSettingsOutlineSize.value);
-	//updateDrawCrosshair();
+	makeConsoleCommands(distanceEdit, a, lineLength);
 });
 
 $("#btnCrosshairDot").on("click", function(){
@@ -225,16 +191,25 @@ $("#btnCrosshairTShape").on("click", function(){
 	tcrosshair = !tcrosshair;
 });
 
+$("#btn60fps").on("click", function(){
+	targetFPS = 60;
+	requiredElapsed = 1000 / targetFPS;
+});
+$("#btn165fps").on("click", function(){
+	targetFPS = 165;
+	requiredElapsed = 1000 / targetFPS;
+});
+
 function onresize() {
 	fixCanvas();
-	//updateDrawCrosshair()
 	console.log("lox")
 }
+
 window.addEventListener("resize", onresize);
 fixCanvas();
-//updateDrawCrosshair()
-
 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
   return new bootstrap.Tooltip(tooltipTriggerEl)
 })
+
+makeConsoleCommands(distanceEdit, a, lineLength);
