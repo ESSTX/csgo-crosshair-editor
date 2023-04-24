@@ -1,4 +1,4 @@
-var canvas = document.getElementById('myCanvas');
+var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
 const distanceInternal = 5;
@@ -10,6 +10,7 @@ var lineLength = 3;
 	distanceEdit = 1;
 	gap = distanceInternal + distanceEdit;
 	gapShoot = 0;
+	gapShootMax = 20;
 	thickness = 0;
 
 	outline_enabled = true;
@@ -29,10 +30,16 @@ var lineLength = 3;
 	requiredElapsed = 1000 / targetFPS;
 	fpsLag = 0;
 	fps = 0;
+	timeLine = new Array(32).fill(null).map(()=> ({enabled: false, played: false}));
+	
+	mouseDown = false;
+	mouseDownPrev = false;
+	nextFire = 0;
+
 
 function fixCanvas(){
-	canvas.width  = $("#myCanvas").width();
-	canvas.height = $("#myCanvas").height();
+	canvas.width  = $("#canvas").width();
+	canvas.height = $("#canvas").height();
 }
 function drawLine(x1, y1, x2, y2, color, width) {
 	ctx.strokeStyle = color;
@@ -44,8 +51,7 @@ function drawLine(x1, y1, x2, y2, color, width) {
 }
 function drawRect(x, y, w, h, color) {
 	ctx.fillStyle = color;
-	ctx.rect(x, y, w, h);
-	ctx.fill();
+	ctx.fillRect(x, y, w, h);
 }
 function lerp(a, b, n) {
 	return (b - a) * n + a;
@@ -63,7 +69,7 @@ function makeConsoleCommands(gap, alpha, size){
 	$("#result-output").text( cl_crosshairgap +" "+ cl_crosshaircolor_r +" "+ cl_crosshaircolor_g +" "+ cl_crosshaircolor_b +" "+ cl_crosshairalpha +" "+ cl_crosshairsize +" "+ cl_crosshairthickness +" "+ cl_crosshair_outlinethickness );
 }
 
-function updateDrawCrosshair(delta){
+function updateDrawCrosshair(delta, time){
 
 	crosshairSize = lerp(crosshairSize, lineLength * 3, animtime * delta)
 	crosshairThick = lerp(crosshairThick, thickness + 1, animtime * delta)
@@ -99,7 +105,27 @@ function updateDrawCrosshair(delta){
 	if(centerDot){
 		drawRect(centerx-crosshairThick/2, centery-crosshairThick/2, crosshairThick*2, crosshairThick*2, color)
 	}
+	
+	if(mouseDown){
+		if(!mouseDownPrev){
+			mouseDownPrev = true;
+			nextFire = time;
+			gapShoot = 6;
+		}
+	}else{mouseDownPrev = false;gapShoot = 0;}
+	
+	if(mouseDownPrev){
 
+		if(time > nextFire){
+			gap = gap + gapShoot;
+			nextFire = time + 100;
+			if(gapShoot < gapShootMax){
+				gapShoot += 2;
+			}
+		}
+	}
+	
+	console.log(nextFire);
 }
 
 requestAnimationFrame(loop);
@@ -114,7 +140,7 @@ function loop(now) {
 		
 		delta = (now - lastTime) / 1000;
 		
-        updateDrawCrosshair(delta);
+        updateDrawCrosshair(delta, now);
 
 		if(fpsLag>=10){
 			fps = Math.floor(1 /delta);
@@ -123,8 +149,8 @@ function loop(now) {
 		fpsLag++;
 		
 		ctx.font = "12px JetBrainsMonoNL-Regular";
-		ctx.fillText("fps "+fps, 20, 20);
-
+		ctx.fillText("fps "+fps, 20, 34);
+		
         lastTime = now;
     }
     
@@ -135,20 +161,12 @@ function loop(now) {
 // Bind colors
 //
 ////////////////////////////////////////
-var sliderSettingsRed = document.getElementById("settingsRed");
-sliderSettingsRed.addEventListener("input", function() {
-	r = Number(sliderSettingsRed.value);
-	makeConsoleCommands(distanceEdit, a, lineLength);
-});
-var sliderSettingsGreen = document.getElementById("settingsGreen");
-sliderSettingsGreen.addEventListener("input", function() {
-	g = Number(sliderSettingsGreen.value);
-	makeConsoleCommands(distanceEdit, a, lineLength);
-});
-var sliderSettingsBlue = document.getElementById("settingsBlue");
-sliderSettingsBlue.addEventListener("input", function() {
-	b = Number(sliderSettingsBlue.value);
-	makeConsoleCommands(distanceEdit, a, lineLength);
+$("#settingsColor").on("input", function(){
+	const inputVal = $(this).val();
+
+	r = parseInt(inputVal.substring(1, 3), 16);
+	g = parseInt(inputVal.substring(3, 5), 16);
+	b = parseInt(inputVal.substring(5, 7), 16);
 });
 var sliderSettingsAlpha = document.getElementById("settingsAlpha");
 sliderSettingsAlpha.addEventListener("input", function() {
@@ -198,6 +216,14 @@ $("#btn60fps").on("click", function(){
 $("#btn165fps").on("click", function(){
 	targetFPS = 165;
 	requiredElapsed = 1000 / targetFPS;
+});
+
+$("#canvas").on("mousedown", function(){
+	mouseDown = true;
+});
+
+$("#canvas").on("mouseup", function(){
+	mouseDown = false;
 });
 
 function onresize() {
